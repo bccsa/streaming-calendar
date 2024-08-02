@@ -1,1 +1,27 @@
-tmeplate
+# Workflow used to update db-distribution docker contaienr
+name: streaming-calendar
+
+on:
+  push:
+    branches: [ "releases/prod" ]
+      
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: za-scc-docker01
+    environment: streaming-calendar-prod
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Build docker container image 
+    - run: docker build . -f Dockerfile -t "streaming-calendar-prod"
+    # Stop and remove old docker container (https://stackoverflow.com/questions/34228864/stop-and-delete-docker-container-if-its-running)
+    - run: docker stop "streaming-calendar-prod" || true && docker rm "streaming-calendar-prod" || true
+    # Start new container
+    - run: > 
+        docker run -d -p "3000":"3000"
+        --env="Url=${{ secrets.Url }}"
+        streaming-calendar-prod
