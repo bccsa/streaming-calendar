@@ -6,11 +6,12 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { Server } from 'socket.io';
 import fetch from 'node-fetch';
+import 'dotenv/config';
 
-const icalUrl = process.env.Url;
-const limit = parseInt(process.env.Max_number);
+const icalUrl = process.env.URL;
+const limit = parseInt(process.env.MAX_NUMBER || 4);
 const now = luxon.DateTime.now();
-const tenMinutesFromNow = now.plus({ minutes: 10 });
+const tenMinutesFromNow = now.plus({minutes: 10 });
 
 let cache; 
 

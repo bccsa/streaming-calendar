@@ -24,4 +24,6 @@ jobs:
     - run: > 
         docker run -d -p "3000":"3000"
         --env="Url=${{ secrets.Url }}"
+        --name=streaming-calendar-prod
+        --restart unless-stopped
         streaming-calendar-prod
