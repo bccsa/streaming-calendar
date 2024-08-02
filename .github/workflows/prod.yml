@@ -23,7 +23,8 @@ jobs:
     # Start new container
     - run: > 
         docker run -d -p "3000":"3000"
-        --env="Url=${{ secrets.Url }}"
+        --env="URL=${{ secrets.URL }}"
+        --env="MAX_NUMBER=${{ secrets.MAX_NUMBER }}"
         --name=streaming-calendar-prod
         --restart unless-stopped
         streaming-calendar-prod
