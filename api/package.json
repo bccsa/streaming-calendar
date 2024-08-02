@@ -10,6 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "ical-js-parser": "^0.6.12",
     "luxon": "^3.4.4",
