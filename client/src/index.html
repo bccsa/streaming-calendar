@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event List</title>
+    <script src="socket.io/socket.io.js"></script>
+    <link href="./output.css" rel="stylesheet">
+    
+</head>
+<body class="bg-transparent flex flex-col min-h-screen w-max space-y-4">
+    <div id="today-container" class="w-max">
+        <h2 class="text-left text-2xl font-semibold text-white">Today</h2>
+        <div id="today-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
+    </div>
+    <div id="tomorrow-container" class="w-max">
+        <h2 class="text-left text-2xl font-semibold text-white">Tomorrow</h2>
+        <div id="tomorrow-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
+    </div>
+    <div id="later-container" class="w-max">
+        <h2 class="text-left text-2xl font-semibold text-white">Later</h2>
+        <div id="later-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
+    </div>
+    <script>
+        const socket = io();
+
+        socket.on('calendar', (data) => {
+            console.log('Received data from server:', data);
+            displayEvents(data);
+        });
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function createEventElement(event) {
+            // Check if categories is an array before calling .join()
+            const categories = Array.isArray(event.categories) ? event.categories.join(' ') : 'N/A';
+
+            return `
+                <div class="bg-gray-200 p-4 rounded-lg shadow">
+                    <h2 class="text-lg font-bold">${event.title.replace("\\","")}</h2>
+                    <p class="text-sm text-gray-600">${formatDate(event.start)}, ${new Date(event.start).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}</p>
+                </div>
+            `;
+        }
+
+        function displayEvents(events) {
+            let todayEvents = '';
+            let tomorrowEvents = '';
+            let laterEvents = '';
+
+            if (events && events.todayEvents) {
+                todayEvents = events.todayEvents.map(createEventElement).join('');
+            }
+
+            if (events && events.tomorrowEvents) {
+                tomorrowEvents = events.tomorrowEvents.map(createEventElement).join('');
+            }
+
+            if (events && events.laterEvents) {
+                laterEvents = events.laterEvents.map(createEventElement).join('');
+            }
+
+            if (todayEvents) {
+                document.getElementById('today-events').innerHTML = todayEvents;
+                document.getElementById('today-container').classList.remove('hidden');
+            } else {
+                document.getElementById('today-container').classList.add('hidden');
+            }
+
+            if (tomorrowEvents) {
+                document.getElementById('tomorrow-events').innerHTML = tomorrowEvents;
+                document.getElementById('tomorrow-container').classList.remove('hidden');
+            } else {
+                document.getElementById('tomorrow-container').classList.add('hidden');
+            }
+
+            if (laterEvents) {
+                document.getElementById('later-events').innerHTML = laterEvents;
+                document.getElementById('later-container').classList.remove('hidden');
+            } else {
+                document.getElementById('later-container').classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
