@@ -11,7 +11,6 @@ import 'dotenv/config';
 const icalUrl = process.env.URL;
 const limit = parseInt(process.env.MAX_NUMBER || 4);
 const now = luxon.DateTime.now();
-const tenMinutesFromNow = now.plus({minutes: 10 });
 
 let cache; 
 
@@ -21,6 +20,7 @@ const io = new Server(httpServer);
 
 async function getICalData(url) {
     try {
+        const tenMinutesFromNow = Date.now() + 10*60*1000;
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
