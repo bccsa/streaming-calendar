@@ -20,7 +20,7 @@ const io = new Server(httpServer);
 
 async function getICalData(url) {
     try {
-        const tenMinutesFromNow = Date.now(10*60*1000);
+        const tenMinutesFromNow = Date.now() + 10*60*1000;
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
