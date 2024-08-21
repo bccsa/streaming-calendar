@@ -11,6 +11,7 @@ import 'dotenv/config';
 const icalUrl = process.env.URL;
 const limit = parseInt(process.env.MAX_NUMBER || 4);
 const now = luxon.DateTime.now();
+const limitHours = parseInt(process.env.MAX_HOURS || 4);
 
 let cache; 
 
@@ -54,7 +55,7 @@ async function getICalData(url) {
                 location: event.location,
                 description: event.description,
                 categories: event.categories,
-                duration: end - start
+                duration: end.toMillis() - start.toMillis()
             };
         });
 

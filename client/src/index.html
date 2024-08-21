@@ -8,16 +8,16 @@
     <link href="./output.css" rel="stylesheet">
     
 </head>
-<body class="bg-transparent flex flex-col min-h-screen w-max space-y-4">
-    <div id="today-container" class="w-max">
+<body class="bg-transparent flex flex-col min-h-screen w-full space-y-4">
+    <div id="today-container" class="w-full">
         <h2 class="text-left text-2xl font-semibold text-white">Today</h2>
         <div id="today-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
     </div>
-    <div id="tomorrow-container" class="w-max">
+    <div id="tomorrow-container" class="w-full">
         <h2 class="text-left text-2xl font-semibold text-white">Tomorrow</h2>
         <div id="tomorrow-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
     </div>
-    <div id="later-container" class="w-max">
+    <div id="later-container" class="w-full">
         <h2 class="text-left text-2xl font-semibold text-white">Later</h2>
         <div id="later-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
     </div>
@@ -38,11 +38,48 @@
             // Check if categories is an array before calling .join()
             const categories = Array.isArray(event.categories) ? event.categories.join(' ') : 'N/A';
 
+// Convert milliseconds to minutes
+const totalMinutes = Math.floor(event.duration / 60000); 
+
+console.log('Converted duration in minutes:', totalMinutes);
+
+// Format duration from minutes to hours and minutes
+const hours = Math.floor(totalMinutes / 60);
+const minutes = totalMinutes % 60;
+const formattedDuration = `${hours}h ${minutes}m`;
+
+console.log('converted duration into hours:', minutes);
+console.log('Formatted duration:', formattedDuration);
+
+// examples of  events durations
+const events = [ 
+    {name: 'Meeting', duration:1.5}, // 90 minutes
+    {name: 'Webinarkveld', duration:2}, // 120 minutes
+    {name: 'BCC Brødrestevne', duration:67}, // 4020 minutes
+    {name: 'conference', duration:3} // 180 minutes
+
+ // other events ........
+];
+// Filter events which are longer than 4 hours
+const filteredEvents = events.filter(event => event.duration < 4 );
+
+// Display events which are shorter/less than 4 hours
+console.log(filteredEvents);
+;
+
             return `
-                <div class="bg-gray-200 p-4 rounded-lg shadow">
-                    <h2 class="text-lg font-bold">${event.title.replace("\\","")}</h2>
-                    <p class="text-sm text-gray-600">${formatDate(event.start)}, ${new Date(event.start).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}</p>
-                </div>
+<div class="bg-gray-200 rounded-lg shadow flex overflow-hidden">
+                    <div class="flex bg-blue-400">
+                        <p class="origin-center rotate-180 object-center text-white text-2xl font-semibold" style="writing-mode: vertical-rl">${event.categories}</p>
+                    </div>
+                    <div class="flex-1 p-4">
+                        <h2 class="text-2xl font-bold">${event.title.replace("\\","")}</h2>
+                        <p class="text-sm text-lg font-semibold text-gray-600">${formatDate(event.start)}, ${new Date(event.start).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}</p>    
+                     <p class="event.duration">${formattedDuration}</p>
+                        </div>
+                </div>  
+                        </div>
+                    
             `;
         }
 
