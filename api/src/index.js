@@ -9,11 +9,12 @@ import fetch from 'node-fetch';
 import 'dotenv/config';
 
 const icalUrl = process.env.URL;
-const limit = parseInt(process.env.MAX_NUMBER || 4);
+const limit = parseInt(process.env.MAX_NUMBER || 10);
 const now = luxon.DateTime.now();
-const limitHours = parseInt(process.env.MAX_HOURS || 4);
+const maxDuration = parseInt(process.env.MAX_DURATION || 4 * 60 * 60 * 1000);
+const excludeTitles = process.env.EXCLUDE_TITLES.split(",");
 
-let cache; 
+let cache;
 
 const app = express();
 const httpServer = createServer(app);
@@ -21,13 +22,34 @@ const io = new Server(httpServer);
 
 async function getICalData(url) {
     try {
-        const tenMinutesFromNow = Date.now() + 10*60*1000;
+        const tenMinutesFromNow = Date.now() + 10 * 60 * 1000;
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const icalData = await response.text();
         const ParseData = ICalParser.default.toJSON(icalData);
+
+        // function displayEvents(events) {
+        //     // const includedCategories = ['camps', 'meetings', 'conferences', 'magazines'];
+
+        //     // Example RegEx to match event titles containing 'meeting','conference', 'camp' or 'magazine'(case-insensitive global)
+        //     const titleRegex = /webinar/gi;
+
+        //     // Filter events using RegEx for title and categories
+        //     function filterEvents(eventList) {
+        //         return eventList.filter(event => {
+        //             const titleMatch = titleRegex.test(event.summary);
+        //             // const categoryMatch = event.categories && event.categories.some(category => includedCategories.includes(category.toLowerCase()));
+        //             return titleMatch;
+        //         });
+        //     }
+
+        //     // Filter the events list
+        //     const filteredEvents = filterEvents(events);
+
+        //     return filteredEvents;
+        // }
 
         // Process events
         const events = ParseData.events;
@@ -55,9 +77,22 @@ async function getICalData(url) {
                 location: event.location,
                 description: event.description,
                 categories: event.categories,
-                duration: end.toMillis() - start.toMillis()
+                duration: end.toMillis() - start.toMillis(),
             };
         });
+
+        const filteredEvents = mappedEvents.filter(event => {
+            // Exclude events that are longer than the max duration
+            if (event.duration > maxDuration) return false;
+
+            // Filter events from the EXCLUDE_TITLES list
+            for (var i = 0; i < excludeTitles.length; i++) {
+                const r = new RegExp(excludeTitles[i], "gi");
+                if (excludeTitles[i] && event.title.match(r)) return false;
+            }
+
+            return true;
+        })
 
         // Segregate results
         const results = {
@@ -66,7 +101,7 @@ async function getICalData(url) {
             laterEvents: []
         };
 
-        mappedEvents.forEach(event => {
+        filteredEvents.forEach(event => {
             const eventStart = luxon.DateTime.fromISO(event.start);
             if (eventStart.hasSame(now, 'day')) {
                 results.todayEvents.push(event);
@@ -102,7 +137,7 @@ app.get('/output.css', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    socket.emit("calendar",cache)
+    socket.emit("calendar", cache);
     console.log('A user connected');
 });
 
