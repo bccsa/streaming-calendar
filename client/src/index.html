@@ -50,21 +50,6 @@ const formattedDuration = `${hours}h ${minutes}m`;
 
 console.log('converted duration into hours:', minutes);
 console.log('Formatted duration:', formattedDuration);
-
-// examples of  events durations
-const events = [ 
-    {name: 'Meeting', duration:1.5}, // 90 minutes
-    {name: 'Webinarkveld', duration:2}, // 120 minutes
-    {name: 'BCC Brødrestevne', duration:67}, // 4020 minutes
-    {name: 'conference', duration:3} // 180 minutes
-
- // other events ........
-];
-// Filter events which are longer than 4 hours
-const filteredEvents = events.filter(event => event.duration < 4 );
-
-// Display events which are shorter/less than 4 hours
-console.log(filteredEvents);
 ;
 
             return `
