@@ -55,13 +55,15 @@ console.log('Formatted duration:', formattedDuration);
             return `
 <div class="bg-gray-200 rounded-lg shadow flex overflow-hidden">
                     <div class="flex bg-blue-400">
-                        <p class="origin-center rotate-180 object-center text-white text-2xl font-semibold" style="writing-mode: vertical-rl">${event.categories}</p>
+                        <p class="origin-center rotate-180 object-center text-white text-sm font-semibold" style="writing-mode: vertical-rl">${event.categories}</p>
                     </div>
                     <div class="flex-1 p-4">
-                        <h2 class="text-2xl font-bold">${event.title.replace("\\","")}</h2>
-                        <p class="text-sm text-lg font-semibold text-gray-600">${formatDate(event.start)}, ${new Date(event.start).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}</p>    
-                     <p class="event.duration">${formattedDuration}</p>
-                        </div>
+    <h2 class="text-2xl font-bold">${event.title.replace("\\","")}</h2>
+    <p class="text-lg font-bold text-gray-600">
+       ${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][new Date(event.start).getDay()]}, ${formatDate(event.start)}, ${new Date(event.start).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}
+    </p>
+    <p class="event.duration">${formattedDuration}</p>
+</div>
                 </div>  
                         </div>
                     
