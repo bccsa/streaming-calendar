@@ -30,27 +30,6 @@ async function getICalData(url) {
         const icalData = await response.text();
         const ParseData = ICalParser.default.toJSON(icalData);
 
-        // function displayEvents(events) {
-        //     // const includedCategories = ['camps', 'meetings', 'conferences', 'magazines'];
-
-        //     // Example RegEx to match event titles containing 'meeting','conference', 'camp' or 'magazine'(case-insensitive global)
-        //     const titleRegex = /webinar/gi;
-
-        //     // Filter events using RegEx for title and categories
-        //     function filterEvents(eventList) {
-        //         return eventList.filter(event => {
-        //             const titleMatch = titleRegex.test(event.summary);
-        //             // const categoryMatch = event.categories && event.categories.some(category => includedCategories.includes(category.toLowerCase()));
-        //             return titleMatch;
-        //         });
-        //     }
-
-        //     // Filter the events list
-        //     const filteredEvents = filterEvents(events);
-
-        //     return filteredEvents;
-        // }
-
         // Process events
         const events = ParseData.events;
         const futureEvents = events
