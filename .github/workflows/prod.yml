@@ -24,7 +24,8 @@ jobs:
     - run: > 
         docker run -d -p "3000":"3000"
         --env="URL=${{ secrets.URL }}"
-        --env="MAX_NUMBER=${{ secrets.MAX_NUMBER }}"
+        --env="MAX_NUMBER=${{ vars.MAX_NUMBER }}"
+        --env="EXCLUDE_TITLE=${{ vars.EXCLUDE_TITLE }}"
         --name=streaming-calendar-prod
         --restart unless-stopped
         streaming-calendar-prod
