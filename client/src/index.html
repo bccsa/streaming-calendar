@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event List</title>
     <script src="socket.io/socket.io.js"></script>
     <link href="./output.css" rel="stylesheet">
-    
+
 </head>
+
 <body class="bg-transparent flex flex-col min-h-screen w-full space-y-4">
     <div id="today-container" class="w-full">
         <h2 class="text-left text-2xl font-semibold text-white">Today</h2>
@@ -25,7 +27,7 @@
         const socket = io();
 
         socket.on('calendar', (data) => {
-            console.log('Received data from server:', data);
+            // console.log('Received data from server:', data);
             displayEvents(data);
         });
 
@@ -38,34 +40,37 @@
             // Check if categories is an array before calling .join()
             const categories = Array.isArray(event.categories) ? event.categories.join(' ') : 'N/A';
 
-// Convert milliseconds to minutes
-const totalMinutes = Math.floor(event.duration / 60000); 
+            // set the bg-color according to the categories
+            const bgColor = event.categories.includes('Brunstad') ?'orange': 'blue';
 
-console.log('Converted duration in minutes:', totalMinutes);
+            // Convert milliseconds to minutes
+            const totalMinutes = Math.floor(event.duration / 60000);
 
-// Format duration from minutes to hours and minutes
-const hours = Math.floor(totalMinutes / 60);
-const minutes = totalMinutes % 60;
-const formattedDuration = `${hours}h ${minutes}m`;
+            // console.log('Converted duration in minutes:', totalMinutes);
 
-console.log('converted duration into hours:', minutes);
-console.log('Formatted duration:', formattedDuration);
-;
+            // Format duration from minutes to hours and minutes
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            const formattedDuration = `${hours}h ${minutes}m`;
+
+            // console.log('converted duration into hours:', minutes);
+            // console.log('Formatted duration:', formattedDuration);
+            ;
 
             return `
 <div class="bg-gray-200 rounded-lg shadow flex overflow-hidden">
-                    <div class="flex bg-blue-400">
+                      <div class="flex" style="background-color: ${bgColor};">
                         <p class="origin-center rotate-180 object-center text-white text-sm font-semibold" style="writing-mode: vertical-rl">${event.categories}</p>
                     </div>
-                    <div class="flex-1 p-4">
-    <h2 class="text-2xl font-bold">${event.title.replace("\\","")}</h2>
+                    <div class="flex-1 p-4"> 
+    <h2 class="text-2xl font-bold">${event.title.replace("\\", "")}</h2>
     <p class="text-lg font-bold text-gray-600">
        ${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][new Date(event.start).getDay()]}, ${formatDate(event.start)}, ${new Date(event.start).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}
     </p>
     <p class="event.duration">${formattedDuration}</p>
 </div>
                 </div>  
-                        </div>
+                        </div>  
                     
             `;
         }
@@ -110,4 +115,5 @@ console.log('Formatted duration:', formattedDuration);
         }
     </script>
 </body>
+
 </html>
