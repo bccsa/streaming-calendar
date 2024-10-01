@@ -36,8 +36,23 @@ async function getICalData(url) {
         const events = ParseData.events;
         const futureEvents = events
             .filter(event => {
-                const eventStart = luxon.DateTime.fromISO(event.dtstart.value);
-                return eventStart > tenMinutesBeforeNow;
+                const start = luxon.DateTime.fromISO(event.dtstart.value);
+                const end = luxon.DateTime.fromISO(event.dtend.value);
+                const duration = end - start;
+
+                // Include only future events
+                if (start.toMillis() < tenMinutesBeforeNow) return false;
+
+                // Exclude events that are longer than the max duration
+                if (duration > maxDuration) return false;
+
+                // Filter events from the EXCLUDE_TITLES list
+                for (var i = 0; i < excludeTitles.length; i++) {
+                    const r = new RegExp(excludeTitles[i], "gi");
+                    if (excludeTitles[i] && event.summary.match(r)) return false;
+                }
+
+                return true;
             })
             .sort((a, b) => {
                 const dateA = luxon.DateTime.fromISO(a.dtstart.value).toMillis();
@@ -62,19 +77,6 @@ async function getICalData(url) {
             };
         });
 
-        const filteredEvents = mappedEvents.filter(event => {
-            // Exclude events that are longer than the max duration
-            if (event.duration > maxDuration) return false;
-
-            // Filter events from the EXCLUDE_TITLES list
-            for (var i = 0; i < excludeTitles.length; i++) {
-                const r = new RegExp(excludeTitles[i], "gi");
-                if (excludeTitles[i] && event.title.match(r)) return false;
-            }
-
-            return true;
-        })
-
         // Segregate results
         const results = {
             todayEvents: [],
@@ -82,7 +84,7 @@ async function getICalData(url) {
             laterEvents: []
         };
 
-        filteredEvents.forEach(event => {
+        mappedEvents.forEach(event => {
             const eventStart = luxon.DateTime.fromISO(event.start);
             if (eventStart.hasSame(now, 'day')) {
                 results.todayEvents.push(event);
