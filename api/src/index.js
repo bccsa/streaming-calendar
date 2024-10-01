@@ -10,8 +10,8 @@ import 'dotenv/config';
 
 const icalUrl = process.env.URL;
 const limit = parseInt(process.env.MAX_NUMBER || 10);
-const now = luxon.DateTime.now();
-const maxDuration = parseInt(process.env.MAX_DURATION || 4 * 60 * 60 * 1000);
+let now;
+const maxDuration = parseInt(process.env.MAX_DURATION || 7 * 60 * 60 * 1000);
 const excludeTitles = process.env.EXCLUDE_TITLES.split(",");
 
 let cache;
@@ -21,8 +21,10 @@ const httpServer = createServer(app);
 const io = new Server(httpServer);
 
 async function getICalData(url) {
+    now = luxon.DateTime.now();
+
     try {
-        const tenMinutesFromNow = Date.now() + 10 * 60 * 1000;
+        const tenMinutesBeforeNow = Date.now() - 10 * 60 * 1000;
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -35,7 +37,7 @@ async function getICalData(url) {
         const futureEvents = events
             .filter(event => {
                 const eventStart = luxon.DateTime.fromISO(event.dtstart.value);
-                return eventStart > tenMinutesFromNow;
+                return eventStart > tenMinutesBeforeNow;
             })
             .sort((a, b) => {
                 const dateA = luxon.DateTime.fromISO(a.dtstart.value).toMillis();
