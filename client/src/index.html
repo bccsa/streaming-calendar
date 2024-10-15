@@ -62,7 +62,7 @@
             ;
 
             return `
-<div class="rounded-lg bg-gray-200/50 shadow flex overflow-hidden">
+<div class="rounded-lg bg-white/50 shadow flex flex-row overflow-hidden content-center">
     <div class="flex px-1" style="background-color:${bgColor};">
         <p class="origin-center rotate-180 object-center text-white text-lg font-medium"
             style="writing-mode: vertical-rl">${event.categories.replace("Vanderbijlpark", "South Africa")}</p>
@@ -81,9 +81,11 @@
         </div>
     </div>
 
-    <div class="flex-1 content-center">
-        <div class="text-5xl font-light">${event.title.replace("\\", "")}</div>
-        <div class="text-xl mt-1">${formattedDuration}</div>
+    <div class="flex-1 inline-block">
+        <div class="mt-6">
+            <div class="text-5xl font-light">${event.title.replace("\\", "")}</div>
+            <div class="text-xl mt-1">${formattedDuration}</div>
+        </div>
     </div>
 </div>
 
