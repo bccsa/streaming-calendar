@@ -11,15 +11,15 @@
 </head>
 
 <body class="bg-transparent flex flex-col min-h-screen w-full space-y-4">
-    <div id="today-container" class="w-full min-h-4">
+    <div id="today-container" class="w-full">
         <h2 class="text-left text-2xl font-semibold text-white">Today</h2>
         <div id="today-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
     </div>
-    <div id="tomorrow-container" class="w-full min-h-4">
+    <div id="tomorrow-container" class="w-full">
         <h2 class="text-left text-2xl font-semibold text-white">Tomorrow</h2>
         <div id="tomorrow-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
     </div>
-    <div id="later-container" class="w-full min-h-4">
+    <div id="later-container" class="w-full">
         <h2 class="text-left text-2xl font-semibold text-white">Later</h2>
         <div id="later-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
     </div>
@@ -41,7 +41,11 @@
             const categories = Array.isArray(event.categories) ? event.categories.join(' ') : 'N/A';
 
             // set the bg-color according to the categories
-            const bgColor = event.categories.includes('Brunstad') ?'orange': 'blue';
+            const bgColor = event.categories.includes('Brunstad') ? 'orange' : 'blue';
+
+            // Replace "vanderbijlpark" with "South Africa" in the event categories
+            const updatedCategories = event.categories.replace(/Vanderbijlpark/gi, 'South Africa');
+
 
             // Convert milliseconds to minutes
             const totalMinutes = Math.floor(event.duration / 60000);
@@ -58,22 +62,31 @@
             ;
 
             return `
-<div class="bg-gray-200 rounded-lg shadow flex overflow-hidden min-h-8">
-                      <div class="flex" style="background-color:${bgColor};">
-                        <p class="origin-center rotate-180 object-center text-white text-sm font-semibold" style="writing-mode: vertical-rl">${event.categories}</p>
-                    </div>
-                    <div class="flex-1 p-4"> 
-    <h2 class="text-2xl font-bold">${event.title.replace("\\", "")}</h2>
-     <p class="event.duration">${formattedDuration}</p>
-    <p class=" text-lg font-bold text-gray-600">
-        <div class=" bg-green-200 divide-x-4 flex text-lg font-semibold min-h-8">${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][new Date(event.start).getDay()]}</div>
-        <div class=" bg-green-200 divide-x-4 flex text-lg font-semibold min-h-8">${new Date(event.start).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}</div>
-        <div class=" bg-green-200 divide-x-4 flex text-lg font-semibold min-h-8">${formatDate(event.start)}</div> 
-    </p>
+<div class="rounded-lg bg-gray-200/50 shadow flex overflow-hidden">
+    <div class="flex px-1" style="background-color:${bgColor};">
+        <p class="origin-center rotate-180 object-center text-white text-lg font-medium"
+            style="writing-mode: vertical-rl">${event.categories.replace("Vanderbijlpark", "South Africa")}</p>
+    </div>
+
+    <div class="flex flex-col py-2 pl-6">
+        <div class="text-2xl -mb-2">
+            ${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][new
+            Date(event.start).getDay()]}
+        </div>
+        <div class=" text-6xl font-light -mb-1">
+            ${new Date(event.start).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}
+        </div>
+        <div class="text-lg font-semibold">
+            ${formatDate(event.start)}
+        </div>
+    </div>
+
+    <div class="flex-1 content-center">
+        <div class="text-5xl font-light">${event.title.replace("\\", "")}</div>
+        <div class="text-xl mt-1">${formattedDuration}</div>
+    </div>
 </div>
-                </div>  
-                        </div>  
-                    
+
             `;
         }
 
