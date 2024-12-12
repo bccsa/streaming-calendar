@@ -1,80 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Event List</title>
     <script src="socket.io/socket.io.js"></script>
-    <link href="./output.css" rel="stylesheet">
+    <link href="./output.css" rel="stylesheet" />
+  </head>
 
-</head>
-
-<body class="bg-transparent flex flex-col min-h-screen w-full space-y-4">
+  <body class="bg-transparent flex flex-col min-h-screen w-full space-y-4">
     <div id="today-container" class="w-full">
-        <h2 class="text-left text-2xl font-semibold text-white">Today</h2>
-        <div id="today-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
+      <h2 class="text-left text-2xl font-semibold text-white">Today</h2>
+      <div
+        id="today-events"
+        class="space-y-4 text-center text-gray-800 mt-2"
+      ></div>
     </div>
     <div id="tomorrow-container" class="w-full">
-        <h2 class="text-left text-2xl font-semibold text-white">Tomorrow</h2>
-        <div id="tomorrow-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
+      <h2 class="text-left text-2xl font-semibold text-white">Tomorrow</h2>
+      <div
+        id="tomorrow-events"
+        class="space-y-4 text-center text-gray-800 mt-2"
+      ></div>
     </div>
     <div id="later-container" class="w-full">
-        <h2 class="text-left text-2xl font-semibold text-white">Later</h2>
-        <div id="later-events" class="space-y-4 text-center text-gray-800 mt-2"></div>
+      <h2 class="text-left text-2xl font-semibold text-white">Later</h2>
+      <div
+        id="later-events"
+        class="space-y-4 text-center text-gray-800 mt-2"
+      ></div>
     </div>
     <script>
-        const socket = io();
+      const socket = io();
 
-        socket.on('calendar', (data) => {
-            // console.log('Received data from server:', data);
-            displayEvents(data);
+      socket.on("calendar", (data) => {
+        // console.log('Received data from server:', data);
+        displayEvents(data);
+      });
+
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString("en-ZA", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
         });
+      }
 
-        function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
+      function createEventElement(event) {
+        // Check if categories is an array before calling .join()
+        const categories = Array.isArray(event.categories)
+          ? event.categories.join(" ")
+          : "N/A";
 
-        function createEventElement(event) {
-            // Check if categories is an array before calling .join()
-            const categories = Array.isArray(event.categories) ? event.categories.join(' ') : 'N/A';
+        // set the bg-color according to the categories
+        const bgColor = event.categories?.includes("Brunstad")
+          ? "blue"
+          : "rgb(154 52 18)"; // bg-orange-800 from tailwindcss
 
-            // set the bg-color according to the categories
-            const bgColor = event.categories?.includes('Brunstad') ? 'orange' : 'blue';
+        // Replace "vanderbijlpark" with "South Africa" in the event categories
+        const updatedCategories = event.categories?.replace(
+          /Vanderbijlpark/gi,
+          "South Africa"
+        );
 
-            // Replace "vanderbijlpark" with "South Africa" in the event categories
-            const updatedCategories = event.categories?.replace(/Vanderbijlpark/gi, 'South Africa');
+        // Convert milliseconds to minutes
+        const totalMinutes = Math.floor(event.duration / 60000);
 
+        // console.log('Converted duration in minutes:', totalMinutes);
 
-            // Convert milliseconds to minutes
-            const totalMinutes = Math.floor(event.duration / 60000);
+        // Format duration from minutes to hours and minutes
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        const formattedDuration = `${hours}h ${minutes}m`;
 
-            // console.log('Converted duration in minutes:', totalMinutes);
-
-            // Format duration from minutes to hours and minutes
-            const hours = Math.floor(totalMinutes / 60);
-            const minutes = totalMinutes % 60;
-            const formattedDuration = `${hours}h ${minutes}m`;
-
-            // console.log('converted duration into hours:', minutes);
-            // console.log('Formatted duration:', formattedDuration);
-            ;
-
-            return `
+        // console.log('converted duration into hours:', minutes);
+        // console.log('Formatted duration:', formattedDuration);
+        return `
 <div class="rounded-lg bg-white/50 shadow flex flex-row overflow-hidden content-center">
     <div class="flex px-1" style="background-color:${bgColor};">
         <p class="origin-center rotate-180 object-center text-white text-lg font-medium"
-            style="writing-mode: vertical-rl">${event.categories ? event.categories.replace("Vanderbijlpark", "South Africa") : "SCC Live"}</p>
+            style="writing-mode: vertical-rl">${
+              event.categories
+                ? event.categories.replace("Vanderbijlpark", "South Africa")
+                : "SCC Live"
+            }</p>
     </div>
 
     <div class="flex flex-col py-2 pl-6">
         <div class="text-2xl -mb-2">
-            ${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][new
-            Date(event.start).getDay()]}
+            ${
+              [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+              ][new Date(event.start).getDay()]
+            }
         </div>
         <div class=" text-6xl font-light -mb-1">
-            ${new Date(event.start).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}
+            ${new Date(event.start).toLocaleTimeString(navigator.language, {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
         </div>
         <div class="text-lg font-semibold">
             ${formatDate(event.start)}
@@ -83,54 +114,64 @@
 
     <div class="flex-1 inline-block">
         <div class="mt-6">
-            <div class="text-5xl font-light">${event.title.replace("\\", "")}</div>
+            <div class="text-5xl font-light">${event.title.replace(
+              "\\",
+              ""
+            )}</div>
             <div class="text-xl mt-1">${formattedDuration}</div>
         </div>
     </div>
 </div>
 
             `;
+      }
+
+      function displayEvents(events) {
+        let todayEvents = "";
+        let tomorrowEvents = "";
+        let laterEvents = "";
+
+        if (events && events.todayEvents) {
+          todayEvents = events.todayEvents.map(createEventElement).join("");
         }
 
-        function displayEvents(events) {
-            let todayEvents = '';
-            let tomorrowEvents = '';
-            let laterEvents = '';
-
-            if (events && events.todayEvents) {
-                todayEvents = events.todayEvents.map(createEventElement).join('');
-            }
-
-            if (events && events.tomorrowEvents) {
-                tomorrowEvents = events.tomorrowEvents.map(createEventElement).join('');
-            }
-
-            if (events && events.laterEvents) {
-                laterEvents = events.laterEvents.map(createEventElement).join('');
-            }
-
-            if (todayEvents) {
-                document.getElementById('today-events').innerHTML = todayEvents;
-                document.getElementById('today-container').classList.remove('hidden');
-            } else {
-                document.getElementById('today-container').classList.add('hidden');
-            }
-
-            if (tomorrowEvents) {
-                document.getElementById('tomorrow-events').innerHTML = tomorrowEvents;
-                document.getElementById('tomorrow-container').classList.remove('hidden');
-            } else {
-                document.getElementById('tomorrow-container').classList.add('hidden');
-            }
-
-            if (laterEvents) {
-                document.getElementById('later-events').innerHTML = laterEvents;
-                document.getElementById('later-container').classList.remove('hidden');
-            } else {
-                document.getElementById('later-container').classList.add('hidden');
-            }
+        if (events && events.tomorrowEvents) {
+          tomorrowEvents = events.tomorrowEvents
+            .map(createEventElement)
+            .join("");
         }
+
+        if (events && events.laterEvents) {
+          laterEvents = events.laterEvents.map(createEventElement).join("");
+        }
+
+        if (todayEvents) {
+          document.getElementById("today-events").innerHTML = todayEvents;
+          document.getElementById("today-container").classList.remove("hidden");
+        } else {
+          document.getElementById("today-container").classList.add("hidden");
+        }
+
+        if (tomorrowEvents) {
+          document.getElementById("tomorrow-events").innerHTML = tomorrowEvents;
+          document
+            .getElementById("tomorrow-container")
+            .classList.remove("hidden");
+        } else {
+          document.getElementById("tomorrow-container").classList.add("hidden");
+        }
+
+        if (laterEvents) {
+          document.getElementById("later-events").innerHTML = laterEvents;
+          document.getElementById("later-container").classList.remove("hidden");
+        } else {
+          document.getElementById("later-container").classList.add("hidden");
+        }
+      }
     </script>
 </body>
+</body>
+
+  </body>
 
 </html>
