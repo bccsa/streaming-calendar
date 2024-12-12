@@ -41,10 +41,10 @@
             const categories = Array.isArray(event.categories) ? event.categories.join(' ') : 'N/A';
 
             // set the bg-color according to the categories
-            const bgColor = event.categories.includes('Brunstad') ? 'orange' : 'blue';
+            const bgColor = event.categories?.includes('Brunstad') ? 'orange' : 'blue';
 
             // Replace "vanderbijlpark" with "South Africa" in the event categories
-            const updatedCategories = event.categories.replace(/Vanderbijlpark/gi, 'South Africa');
+            const updatedCategories = event.categories?.replace(/Vanderbijlpark/gi, 'South Africa');
 
 
             // Convert milliseconds to minutes
@@ -65,7 +65,7 @@
 <div class="rounded-lg bg-white/50 shadow flex flex-row overflow-hidden content-center">
     <div class="flex px-1" style="background-color:${bgColor};">
         <p class="origin-center rotate-180 object-center text-white text-lg font-medium"
-            style="writing-mode: vertical-rl">${event.categories.replace("Vanderbijlpark", "South Africa")}</p>
+            style="writing-mode: vertical-rl">${event.categories ? event.categories.replace("Vanderbijlpark", "South Africa") : "SCC Live"}</p>
     </div>
 
     <div class="flex flex-col py-2 pl-6">
