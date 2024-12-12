@@ -12,7 +12,7 @@ const icalUrl = process.env.URL;
 const limit = parseInt(process.env.MAX_NUMBER || 10);
 let now;
 const maxDuration = parseInt(process.env.MAX_DURATION || 7 * 60 * 60 * 1000);
-const excludeTitles = process.env.EXCLUDE_TITLES.split(",");
+const excludeTitles = process.env.EXCLUDE_TITLES?.split(",") || [];
 
 let cache;
 
@@ -29,7 +29,7 @@ async function getICalData(url) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const icalData = await response.text();
+        const icalData = (await response.text()).replaceAll('South Africa Standard Time', 'CAT');
         const ParseData = ICalParser.default.toJSON(icalData);
 
         // Process events
